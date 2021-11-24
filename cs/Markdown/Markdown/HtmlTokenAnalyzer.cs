@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Markdown.Parsers;
 
 namespace Markdown
 {
@@ -13,34 +12,25 @@ namespace Markdown
 
         public string AnalyzeLine(string line)
         {
-
             for (var i = 0; i < line.Length; i++)
             {
                 var currentSymbol = line[i];
-                var parsersTable = ParsersStorage.ParsersTable;
-                var currentAndNextSymbols = (i< line.Length - 1) ? currentSymbol.ToString() +line[i+1] : null;
-                IParser parser;
-                StringBuilder builder;
-                
-                if (currentAndNextSymbols != null && parsersTable.ContainsKey(currentAndNextSymbols))
+                var parsersList = ParsersStorage.ParserList;
+                IToken token = null;
+
+                foreach (var parser in parsersList)
                 {
-                    parser = parsersTable[currentAndNextSymbols];
-                    builder = _currentBuilder;
+                    token = parser.TryGetToken(ref i, ref _currentBuilder, ref line);
+                    if (token != null)
+                        break;
                 }
-                else if (parsersTable.ContainsKey(currentSymbol.ToString()))
-                {
-                    parser = parsersTable[currentSymbol.ToString()];
-                    builder = (currentSymbol == '\\') ? null : _currentBuilder;
-                }
-                else
+
+                if (token == null)
                 {
                     _currentBuilder.Append(currentSymbol);
                     continue;
                 }
-                var token = parser.TryGetToken(ref i, ref _currentBuilder, ref line, currentSymbol);
-                if (token == null)
-                    continue;
-                AddWordToken(builder);
+                AddWordToken(_currentBuilder);
                 AddToken(token);
             }
             AddWordToken(_currentBuilder);

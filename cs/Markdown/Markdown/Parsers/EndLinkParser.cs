@@ -6,10 +6,13 @@ namespace Markdown.Parsers
 {
     public class EndLinkParser : IParser
     {
-        public IToken TryGetToken(ref int i, ref StringBuilder stringBuilder, ref string line, char currentSymbol)
+        public IToken TryGetToken(ref int i, ref StringBuilder stringBuilder, ref string line)
         {
+            if (line[i] != ']')
+                return null;
+
             var substring = line.Substring(i + 1, line.Length - i - 1);
-            string address;
+            string address = null;
             if (line[i + 1] == '(' && substring.Contains(')'))
             {
 
@@ -18,11 +21,6 @@ namespace Markdown.Parsers
                 address = line.Substring(i + start + 2, finish - 1 - start);
                 line = line.Remove(start, finish - start + 1);
             }
-            else
-            {
-                address = null;
-            }
-
             return new TagLink(address);
         }
     }

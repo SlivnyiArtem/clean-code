@@ -5,19 +5,18 @@ namespace Markdown.Parsers
 {
     public class ShieldingTagParser : IParser
     {
-        private readonly HashSet<char> _specialSymbols = new HashSet<char> { '_', '#', '[', ']' };
+        private readonly HashSet<char> _specialSymbols = new HashSet<char> { '_', '#', '[', ']', '\\' };
 
-        public IToken TryGetToken(ref int i, ref StringBuilder stringBuilder, ref string line, char currentSymbol)
+        public IToken TryGetToken(ref int i, ref StringBuilder stringBuilder, ref string line)
         {
-            if (_specialSymbols.Contains(line[i + 1]) ||
-                line[i + 1] == '\\')
+            if (line[i] == '\\' && (_specialSymbols.Contains(line[i + 1])))
             {
                 stringBuilder.Append(line[i + 1]);
                 i++;
             }
             else
             {
-                stringBuilder.Append(line[i]);
+                return null;
             }
             return new TokenWord(null);
         }

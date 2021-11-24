@@ -5,19 +5,19 @@ namespace Markdown
 {
     public static class ParsersStorage
     {
-        public static Dictionary<string, IParser> ParsersTable => MakeDictionary();
+        public static List<IParser> ParserList => MakeParserList();
 
-        private static Dictionary<string, IParser> MakeDictionary()
+        private static List<IParser> MakeParserList()
         {
-            return new Dictionary<string, IParser>
+            return new List<IParser>()
             {
-                ["\\"] = new ShieldingTagParser(),
-                ["#"] = new HeaderParser(),
-                [" "] = new SpaceParser(),
-                ["["] = new StartLinkParser(),
-                ["]"] = new EndLinkParser(),
-                ["__"] = new DoubleUnderliningParser(),
-                ["_"] = new SingleUnderliningParser(),
+                new DoubleUnderliningParser(),
+                new SingleUnderliningParser(),
+                new ShieldingTagParser(),
+                new HeaderParser(),
+                new SpaceParser(),
+                new StartLinkParser(),
+                new EndLinkParser(),
             };
         }
     }
